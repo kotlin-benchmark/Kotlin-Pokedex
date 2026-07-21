@@ -60,8 +60,8 @@ dependencies {
     implementation("com.leinardi.android:speed-dial:3.3.0")
 
     // Retrofit
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
 
     // Persistence
     implementation("androidx.room:room-runtime:2.5.0")
