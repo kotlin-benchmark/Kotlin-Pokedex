@@ -54,7 +54,7 @@ dependencies {
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
 
     // Material
-    implementation("com.google.android.material:material:1.8.0")
+    implementation("com.google.android.material:material:1.14.0")
 
     // Third Party
     implementation("com.leinardi.android:speed-dial:3.3.0")
