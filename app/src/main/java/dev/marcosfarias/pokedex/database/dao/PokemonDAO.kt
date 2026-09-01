@@ -6,6 +6,8 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.RawQuery
+import androidx.sqlite.db.SupportSQLiteQuery
 import dev.marcosfarias.pokedex.model.Pokemon
 
 @Dao
@@ -19,6 +21,9 @@ interface PokemonDAO {
 
     @Query("SELECT * FROM pokemon")
     fun all(): LiveData<List<Pokemon>>
+
+    @RawQuery
+    fun searchByRawQuery(query: SupportSQLiteQuery): List<Pokemon>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun add(pokemon: List<Pokemon>)
