@@ -17,8 +17,6 @@ val networkModule = module {
         val trustManagers = arrayOf<TrustManager>(object : X509TrustManager {
             override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {}
 
-            //CWE-295
-            //SINK
             override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {
             }
 
@@ -29,7 +27,21 @@ val networkModule = module {
         sslContext.init(null, trustManagers, SecureRandom())
 
         OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                //CWE-798
+                //SOURCE
+                val apiPassword = "p0k3dex-2019!secret"
+                //CWE-798
+                //SINK
+                val credential = okhttp3.Credentials.basic("pokedex_admin", apiPassword)
+                val request = chain.request().newBuilder()
+                    .header("Authorization", credential)
+                    .build()
+                chain.proceed(request)
+            }
             .sslSocketFactory(sslContext.socketFactory, trustManagers[0] as X509TrustManager)
+            //CWE-295
+            //SINK
             .hostnameVerifier { _, _ -> true }
             .build()
     }
