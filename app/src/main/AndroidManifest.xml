@@ -8,8 +8,8 @@
     <!-- CWE-489 -->
     <!-- SINK -->
     <application
-        android:name=".App"
         android:debuggable="true"
+        android:name=".App"
         android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -41,8 +41,8 @@
         <!-- CWE-926 -->
         <!-- SINK -->
         <activity
-            android:name=".DatabaseExportActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:name=".DatabaseExportActivity" />
     </application>
 
 </manifest>
