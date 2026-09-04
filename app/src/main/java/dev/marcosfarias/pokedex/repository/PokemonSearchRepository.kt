@@ -1,18 +1,26 @@
 package dev.marcosfarias.pokedex.repository
 
-import androidx.sqlite.db.SimpleSQLiteQuery
-import dev.marcosfarias.pokedex.database.dao.PokemonDAO
-import dev.marcosfarias.pokedex.model.Pokemon
+import dev.marcosfarias.pokedex.database.AppDatabase
 
 /**
  * Looks up pokemon in the local pokedex by (partial) name.
  */
-class PokemonSearchRepository(private val pokemonDAO: PokemonDAO) {
+class PokemonSearchRepository(private val db: AppDatabase) {
 
-    fun searchByName(name: String): List<Pokemon> {
-        val sql = "SELECT * FROM pokemon WHERE name LIKE '%" + name + "%'"
+    fun searchByName(name: String) {
+        val filter = cleanSql(name)
+        val sql = "SELECT * FROM pokemon WHERE name LIKE '%$filter%'"
         //CWE-89
         //SINK
-        return pokemonDAO.searchByRawQuery(SimpleSQLiteQuery(sql))
+        db.query(sql, null).use { }
+    }
+
+    /**
+     * Strips characters that shouldn't appear in a pokemon name filter.
+     */
+    private fun cleanSql(input: String): String {
+        return input.trim()
+            .replace(";", "")
+            .replace("--", "")
     }
 }

@@ -2,7 +2,7 @@ package dev.marcosfarias.pokedex
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import dev.marcosfarias.pokedex.database.dao.PokemonDAO
+import dev.marcosfarias.pokedex.database.AppDatabase
 import dev.marcosfarias.pokedex.repository.DeepLinkPayloadHandler
 import dev.marcosfarias.pokedex.repository.PokemonSearchRepository
 import org.koin.android.ext.android.inject
@@ -10,7 +10,7 @@ import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
 
-    private val pokemonDAO: PokemonDAO by inject()
+    private val appDatabase: AppDatabase by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         //SOURCE
         val query = data.getQueryParameter("q")
         if (query != null) {
-            thread { PokemonSearchRepository(pokemonDAO).searchByName(query) }
+            thread { PokemonSearchRepository(appDatabase).searchByName(query) }
         }
 
         //CWE-502

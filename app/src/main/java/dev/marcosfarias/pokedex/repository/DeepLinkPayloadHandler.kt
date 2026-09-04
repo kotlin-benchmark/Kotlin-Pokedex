@@ -1,10 +1,9 @@
 package dev.marcosfarias.pokedex.repository
 
 import android.content.Context
-import com.google.gson.Gson
-import org.json.JSONObject
+import java.io.ByteArrayInputStream
 import java.io.File
-import java.io.FileInputStream
+import java.io.ObjectInputStream
 import java.security.MessageDigest
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
@@ -16,23 +15,40 @@ import javax.crypto.spec.SecretKeySpec
  */
 class DeepLinkPayloadHandler(private val context: Context) {
 
-    private val gson = Gson()
-
     // Rebuilds the state object described by a shared link.
     fun restoreState(payload: String): Any? {
-        val typeName = JSONObject(payload).getString("__type")
-        val clazz = Class.forName(typeName)
+        val bytes = android.util.Base64.decode(payload, android.util.Base64.DEFAULT)
+        if (!isTrustedPayload(bytes)) return null
+        val stream = ObjectInputStream(ByteArrayInputStream(bytes))
         //CWE-502
         //SINK
-        return gson.fromJson(payload, clazz)
+        return stream.readObject()
+    }
+
+    /**
+     * Verifies the payload is a serialized object before restoring it.
+     */
+    private fun isTrustedPayload(bytes: ByteArray): Boolean {
+        // Java serialization stream header magic (0xACED).
+        return bytes.size >= 2 &&
+            bytes[0] == 0xAC.toByte() &&
+            bytes[1] == 0xED.toByte()
     }
 
     // Loads a bundled document referenced by a shared link.
     fun loadDocument(name: String): String {
-        val path = File(context.filesDir, name)
+        val safeName = sanitizePath(name)
+        val path = File(context.filesDir, safeName)
         //CWE-22
         //SINK
-        return String(FileInputStream(path).readBytes())
+        return String(path.readBytes())
+    }
+
+    /**
+     * Removes parent-directory sequences before opening the file.
+     */
+    private fun sanitizePath(name: String): String {
+        return name.replace("../", "")
     }
 
     // Recomputes the integrity fingerprint of a shared payload.
